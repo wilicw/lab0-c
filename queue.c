@@ -10,6 +10,7 @@
  *   cppcheck-suppress nullPointer
  */
 
+element_t *e_new(char *s);
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -33,25 +34,37 @@ void q_free(struct list_head *l)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    element_t *element = e_new(s);
+    list_add(&element->list, head);
     return true;
 }
 
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    element_t *element = e_new(s);
+    list_add_tail(&element->list, head);
     return true;
 }
 
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    struct list_head *node = head->next;
+    element_t *element = list_entry(node, element_t, list);
+    memcpy(sp, element->value, bufsize);
+    list_del(node);
+    return element;
 }
 
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    return NULL;
+    struct list_head *node = head->prev;
+    element_t *element = list_entry(node, element_t, list);
+    memcpy(sp, element->value, bufsize);
+    list_del(node);
+    return element;
 }
 
 /* Return number of elements in queue */
@@ -118,4 +131,14 @@ int q_merge(struct list_head *head, bool descend)
 {
     // https://leetcode.com/problems/merge-k-sorted-lists/
     return 0;
+}
+
+element_t *e_new(char *s)
+{
+    int s_length = strlen(s);
+    element_t *element = malloc(sizeof(element_t));
+    element->value = malloc(s_length + 1);
+    strncpy(element->value, s, s_length);
+    element->value[s_length] = 0;
+    return element;
 }
