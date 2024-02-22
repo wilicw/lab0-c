@@ -11,6 +11,7 @@
  */
 
 element_t *e_new(char *s);
+bool e_free(element_t *e);
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -24,10 +25,8 @@ struct list_head *q_new()
 void q_free(struct list_head *l)
 {
     element_t *element, *safe;
-    list_for_each_entry_safe (element, safe, l, list) {
-        free(element->value);
-        free(element);
-    }
+    list_for_each_entry_safe (element, safe, l, list)
+        e_free(element);
     free(l);
 }
 
@@ -81,6 +80,18 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
+    if (!head || head->next == head)
+        return false;
+
+    struct list_head *fast, *slow, *mid;
+    slow = head;
+    for (fast = (head)->next; fast != head && fast->next != head;
+         fast = fast->next->next)
+        slow = slow->next;
+    mid = slow->next;
+    list_del(mid);
+    element_t *element = list_entry(mid, element_t, list);
+    e_free(element);
     return true;
 }
 
@@ -141,4 +152,14 @@ element_t *e_new(char *s)
     strncpy(element->value, s, s_length);
     element->value[s_length] = 0;
     return element;
+}
+
+bool e_free(element_t *e)
+{
+    if (!e)
+        return false;
+    if (e->value)
+        free(e->value);
+    free(e);
+    return true;
 }
