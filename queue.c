@@ -117,6 +117,9 @@ void q_swap(struct list_head *head)
         prev->next = second;
         second->next = first;
         first->next = next;
+        next->prev = first;
+        first->prev = second;
+        second->prev = prev;
         prev = first;
     }
 }
