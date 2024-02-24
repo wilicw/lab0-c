@@ -52,6 +52,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     struct list_head *node = head->next;
     element_t *element = list_entry(node, element_t, list);
     memcpy(sp, element->value, bufsize);
+    sp[bufsize - 1] = 0;
     list_del(node);
     return element;
 }
@@ -62,6 +63,7 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     struct list_head *node = head->prev;
     element_t *element = list_entry(node, element_t, list);
     memcpy(sp, element->value, bufsize);
+    sp[bufsize - 1] = 0;
     list_del(node);
     return element;
 }
