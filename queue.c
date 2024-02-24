@@ -49,6 +49,9 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
+    if (!sp || !head || head->next == head)
+        return NULL;
+
     struct list_head *node = head->next;
     element_t *element = list_entry(node, element_t, list);
     memcpy(sp, element->value, bufsize);
@@ -60,6 +63,9 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
+    if (!sp || !head || head->next == head)
+        return NULL;
+
     struct list_head *node = head->prev;
     element_t *element = list_entry(node, element_t, list);
     memcpy(sp, element->value, bufsize);
