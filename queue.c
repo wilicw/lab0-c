@@ -13,6 +13,8 @@
 static inline element_t *e_new(char *s);
 static inline void e_free(element_t *e);
 static inline int q_de_a_scend(struct list_head *head, bool descend);
+static inline void q_subsitute(struct list_head *head,
+                               struct list_head *new_head);
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -215,10 +217,7 @@ void q_reverseK(struct list_head *head, int k)
         cur = next;
     }
 
-    head->next = new_head.next;
-    head->next->prev = head;
-    head->prev = new_head.prev;
-    head->prev->next = head;
+    q_subsitute(head, &new_head);
 }
 
 /* Sort elements of queue in ascending/descending order */
@@ -241,10 +240,8 @@ void q_sort(struct list_head *head, bool descend)
         list_del(cur);
         list_add_tail(cur, node);
     }
-    head->next = sorted.next;
-    head->next->prev = head;
-    head->prev = sorted.prev;
-    head->prev->next = head;
+
+    q_subsitute(head, &sorted);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to
@@ -313,4 +310,13 @@ static inline int q_de_a_scend(struct list_head *head, bool descend)
         cur = safe;
     }
     return cnt;
+}
+
+static inline void q_subsitute(struct list_head *head,
+                               struct list_head *new_head)
+{
+    head->next = new_head->next;
+    head->next->prev = head;
+    head->prev = new_head->prev;
+    head->prev->next = head;
 }
