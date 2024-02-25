@@ -10,8 +10,8 @@
  *   cppcheck-suppress nullPointer
  */
 
-bool e_free(element_t *e);
 static inline element_t *e_new(char *s);
+static inline void e_free(element_t *e);
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -246,12 +246,9 @@ static inline element_t *e_new(char *s)
     return element;
 }
 
-bool e_free(element_t *e)
+static inline void e_free(element_t *e)
 {
-    if (!e)
-        return false;
-    if (e->value)
-        free(e->value);
+    char *es = !e ? NULL : e->value;
     free(e);
-    return true;
+    free(es);
 }
