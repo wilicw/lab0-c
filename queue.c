@@ -66,7 +66,7 @@ bool q_insert_tail(struct list_head *head, char *s)
 /* Remove an element from head of queue */
 element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
-    if (!sp || !head || head->next == head)
+    if (!sp || !head || list_empty(head))
         return NULL;
 
     struct list_head *node = head->next;
@@ -80,7 +80,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 /* Remove an element from tail of queue */
 element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
 {
-    if (!sp || !head || head->next == head)
+    if (!sp || !head || list_empty(head))
         return NULL;
 
     struct list_head *node = head->prev;
@@ -105,7 +105,7 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return false;
 
     struct list_head *fast, *slow, *mid;
@@ -124,7 +124,7 @@ bool q_delete_mid(struct list_head *head)
 bool q_delete_dup(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return false;
 
     struct list_head *node, *safe;
@@ -149,7 +149,7 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return;
 
     struct list_head *prev = head;
@@ -170,7 +170,7 @@ void q_swap(struct list_head *head)
 /* Reverse elements in queue */
 void q_reverse(struct list_head *head)
 {
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return;
 
     struct list_head *current = head;
@@ -186,7 +186,7 @@ void q_reverse(struct list_head *head)
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return;
 
     struct list_head new_head = {&new_head, &new_head};
@@ -223,7 +223,7 @@ void q_reverseK(struct list_head *head, int k)
 /* Sort elements of queue in ascending/descending order */
 void q_sort(struct list_head *head, bool descend)
 {
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return;
 
     struct list_head *cur, *safe;
@@ -290,7 +290,7 @@ static inline void e_free(element_t *e)
 
 static inline int q_de_a_scend(struct list_head *head, bool descend)
 {
-    if (!head || head->next == head)
+    if (!head || list_empty(head))
         return 0;
 
     int cnt = 0;
