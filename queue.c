@@ -12,6 +12,7 @@
 
 static inline element_t *e_new(char *s);
 static inline void e_free(element_t *e);
+static inline int q_de_a_scend(struct list_head *head, bool descend);
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -228,7 +229,7 @@ void q_sort(struct list_head *head, bool descend) {}
 int q_ascend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    return q_de_a_scend(head, false);
 }
 
 /* Remove every node which has a node with a strictly greater value anywhere to
@@ -236,7 +237,7 @@ int q_ascend(struct list_head *head)
 int q_descend(struct list_head *head)
 {
     // https://leetcode.com/problems/remove-nodes-from-linked-list/
-    return 0;
+    return q_de_a_scend(head, true);
 }
 
 /* Merge all the queues into one sorted queue, which is in ascending/descending
@@ -265,4 +266,28 @@ static inline void e_free(element_t *e)
     char *es = !e ? NULL : e->value;
     free(e);
     free(es);
+}
+
+static inline int q_de_a_scend(struct list_head *head, bool descend)
+{
+    if (!head || head->next == head)
+        return 0;
+
+    int cnt = 0;
+    struct list_head *cur = descend ? head->prev : head->next;
+    struct list_head *safe;
+    char *cmp_str = NULL;
+    while (cur != head) {
+        safe = descend ? cur->prev : cur->next;
+        element_t *element = list_entry(cur, element_t, list);
+        if (cmp_str && strcmp(cmp_str, element->value) >= 0) {
+            list_del(cur);
+            e_free(element);
+        } else {
+            cmp_str = element->value;
+            ++cnt;
+        }
+        cur = safe;
+    }
+    return cnt;
 }
