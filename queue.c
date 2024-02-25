@@ -17,13 +17,17 @@ static inline void e_free(element_t *e);
 struct list_head *q_new()
 {
     struct list_head *list = malloc(sizeof(struct list_head));
-    INIT_LIST_HEAD(list);
+    if (list)
+        INIT_LIST_HEAD(list);
     return list;
 }
 
 /* Free all storage used by queue */
 void q_free(struct list_head *l)
 {
+    if (!l)
+        return;
+
     element_t *element, *safe;
     list_for_each_entry_safe (element, safe, l, list)
         e_free(element);
@@ -33,7 +37,12 @@ void q_free(struct list_head *l)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+
     element_t *element = e_new(s);
+    if (!element)
+        return false;
     list_add(&element->list, head);
     return true;
 }
@@ -41,7 +50,12 @@ bool q_insert_head(struct list_head *head, char *s)
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    if (!head)
+        return false;
+
     element_t *element = e_new(s);
+    if (!element)
+        return false;
     list_add_tail(&element->list, head);
     return true;
 }
