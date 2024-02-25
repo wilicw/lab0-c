@@ -10,8 +10,8 @@
  *   cppcheck-suppress nullPointer
  */
 
-element_t *e_new(char *s);
 bool e_free(element_t *e);
+static inline element_t *e_new(char *s);
 
 /* Create an empty queue */
 struct list_head *q_new()
@@ -233,13 +233,16 @@ int q_merge(struct list_head *head, bool descend)
     return 0;
 }
 
-element_t *e_new(char *s)
+static inline element_t *e_new(char *s)
 {
-    int s_length = strlen(s);
     element_t *element = malloc(sizeof(element_t));
-    element->value = malloc(s_length + 1);
-    strncpy(element->value, s, s_length);
-    element->value[s_length] = 0;
+    char *es = strdup(s);
+    if (!element || !es) {
+        free(element);
+        free(es);
+        return NULL;
+    }
+    element->value = es;
     return element;
 }
 
