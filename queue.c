@@ -11,7 +11,6 @@
  */
 
 static inline element_t *e_new(char *s);
-static inline void e_free(element_t *e);
 static inline int q_de_a_scend(struct list_head *head, bool descend);
 static inline void q_subsitute(struct list_head *head,
                                struct list_head *new_head);
@@ -33,7 +32,7 @@ void q_free(struct list_head *l)
 
     element_t *element, *safe;
     list_for_each_entry_safe (element, safe, l, list)
-        e_free(element);
+        q_release_element(element);
     free(l);
 }
 
@@ -116,7 +115,7 @@ bool q_delete_mid(struct list_head *head)
     mid = slow->next;
     list_del(mid);
     element_t *element = list_entry(mid, element_t, list);
-    e_free(element);
+    q_release_element(element);
     return true;
 }
 
@@ -134,11 +133,11 @@ bool q_delete_dup(struct list_head *head)
         element_t *nxt = list_entry(node->next, element_t, list);
         if (node->next != head && strcmp(cur->value, nxt->value) == 0) {
             list_del(node);
-            e_free(cur);
+            q_release_element(cur);
             mark_del = true;
         } else if (mark_del) {
             list_del(node);
-            e_free(cur);
+            q_release_element(cur);
             mark_del = false;
         }
     }
@@ -281,13 +280,6 @@ static inline element_t *e_new(char *s)
     return element;
 }
 
-static inline void e_free(element_t *e)
-{
-    char *es = !e ? NULL : e->value;
-    free(e);
-    free(es);
-}
-
 static inline int q_de_a_scend(struct list_head *head, bool descend)
 {
     if (!head || list_empty(head))
@@ -302,7 +294,7 @@ static inline int q_de_a_scend(struct list_head *head, bool descend)
         element_t *element = list_entry(cur, element_t, list);
         if (cmp_str && strcmp(cmp_str, element->value) >= 0) {
             list_del(cur);
-            e_free(element);
+            q_release_element(element);
         } else {
             cmp_str = element->value;
             ++cnt;
