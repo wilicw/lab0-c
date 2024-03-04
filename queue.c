@@ -179,7 +179,7 @@ void q_reverseK(struct list_head *head, int k)
     if (!head || list_empty(head))
         return;
 
-    struct list_head new_head = {&new_head, &new_head};
+    LIST_HEAD(new_head);
     struct list_head *cur = head->next;
 
     while (cur != head) {
@@ -222,14 +222,14 @@ struct list_head *q_sort_merge(struct list_head *head, bool descend)
         slow = slow->next;
     mid = slow;
 
-    struct list_head left = {&left, &left};
+    LIST_HEAD(left);
     struct list_head *right = head;
     list_cut_position(&left, head, mid);
 
     struct list_head *left_sorted = q_sort_merge(&left, descend);
     struct list_head *right_sorted = q_sort_merge(right, descend);
 
-    struct list_head sorted = {&sorted, &sorted};
+    LIST_HEAD(sorted);
     queue_contex_t left_ctx = {.q = left_sorted};
     queue_contex_t right_ctx = {.q = right_sorted};
     list_add_tail(&left_ctx.chain, &sorted);
@@ -274,7 +274,7 @@ int q_merge(struct list_head *head, bool descend)
 
     int cnt = 0;
 
-    struct list_head sorted = {&sorted, &sorted};
+    LIST_HEAD(sorted);
     struct list_head *node;
 
     for (;;) {
