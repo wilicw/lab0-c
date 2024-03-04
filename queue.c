@@ -210,28 +210,42 @@ void q_reverseK(struct list_head *head, int k)
     list_splice(&new_head, head);
 }
 
+struct list_head *q_sort_merge(struct list_head *head, bool descend)
+{
+    if (!head || list_empty(head) || list_is_singular(head))
+        return head;
+
+    struct list_head *fast, *slow, *mid;
+    slow = head;
+    for (fast = (head)->next; fast != head && fast->next != head;
+         fast = fast->next->next)
+        slow = slow->next;
+    mid = slow;
+
+    struct list_head left = {&left, &left};
+    struct list_head *right = head;
+    list_cut_position(&left, head, mid);
+
+    struct list_head *left_sorted = q_sort_merge(&left, descend);
+    struct list_head *right_sorted = q_sort_merge(right, descend);
+
+    struct list_head sorted = {&sorted, &sorted};
+    queue_contex_t left_ctx = {.q = left_sorted};
+    queue_contex_t right_ctx = {.q = right_sorted};
+    list_add_tail(&left_ctx.chain, &sorted);
+    list_add_tail(&right_ctx.chain, &sorted);
+    q_merge(&sorted, descend);
+    list_splice(list_entry(sorted.next, queue_contex_t, chain)->q, head);
+    return head;
+}
+
 /* Sort elements of queue in ascending/descending order */
 void q_sort(struct list_head *head, bool descend)
 {
-    if (!head || list_empty(head))
+    if (!head || list_empty(head) || list_is_singular(head))
         return;
 
-    struct list_head *cur, *safe;
-    struct list_head sorted = {&sorted, &sorted};
-    list_for_each_safe (cur, safe, head) {
-        struct list_head *node;
-        element_t *cur_element = list_entry(cur, element_t, list);
-        list_for_each (node, &sorted) {
-            element_t *node_element = list_entry(node, element_t, list);
-            if (descend ? strcmp(cur_element->value, node_element->value) > 0
-                        : strcmp(cur_element->value, node_element->value) < 0)
-                break;
-        }
-        list_del(cur);
-        list_add_tail(cur, node);
-    }
-
-    list_splice(&sorted, head);
+    q_sort_merge(head, descend);
 }
 
 /* Remove every node which has a node with a strictly less value anywhere to
