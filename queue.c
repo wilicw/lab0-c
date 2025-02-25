@@ -10,6 +10,20 @@
  *   cppcheck-suppress nullPointer
  */
 
+element_t *q_new_element(char *s)
+{
+    element_t *new = malloc(sizeof(element_t));
+    if (!new)
+        return NULL;
+
+    new->value = strdup(s);
+    if (!new->value) {
+        free(new);
+        return NULL;
+    }
+    return new;
+}
+
 /* Create an empty queue */
 struct list_head *q_new()
 {
@@ -22,12 +36,29 @@ void q_free(struct list_head *head) {}
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    element_t *new = q_new_element(s);
+    if (!new)
+        return false;
+
+    new->list.next = head->next;
+    new->list.prev = head;
+    head->next->prev = &new->list;
+    head->next = &new->list;
     return true;
 }
 
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
+    struct list_head *tail = head->prev;
+    element_t *new = q_new_element(s);
+    if (!new)
+        return false;
+
+    new->list.next = head;
+    new->list.prev = tail;
+    tail->next = &new->list;
+    head->prev = &new->list;
     return true;
 }
 
